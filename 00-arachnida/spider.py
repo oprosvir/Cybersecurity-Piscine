@@ -3,6 +3,40 @@
 import argparse
 import os
 import sys
+import requests
+
+class Spider:
+
+    def __init__(self, save_path, max_depth):
+        self.save_path = save_path
+        self.max_depth = max_depth
+        self.headers = {
+            'User-Agent': 'Mozilla/5.0 (compatible; Spider/1.0)'
+        }
+
+    def run(self, start_url):
+       print(f"Starting spider...")
+       print(f"Target URL: {start_url}")
+       print(f"Save path: {self.save_path}")
+       if self.max_depth:
+            print(f"Max depth: {self.max_depth}")
+       print("-" * 50)
+
+       self.crawl(start_url)
+
+       print("-" * 50)
+       print(f"Crawling complete!")
+    
+    def crawl(self, url):
+        try:
+            response = requests.get(url, headers=self.headers, timeout=10)
+            response.raise_for_status()
+            html = response.text
+            print(f"html page:\n{html}")
+        except requests.exceptions.RequestException as e:
+            print(f"Error: Failed to fetch {url}: {e}", file=sys.stderr)
+        except Exception as e:
+            print(f"Error: Unexpected error processing {url}: {e}", file=sys.stderr)
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Spider: Web Image Scraper')
@@ -22,6 +56,7 @@ def check_args(args):
     else:
         if args.level is not None:
             print("Note: Recursion disabled. Ignoring -l flag.")
+            print("-" * 50)
         args.level = 0
 
     if not args.url.startswith(('http://', 'https://')):
@@ -40,6 +75,7 @@ def check_args(args):
         try:
             os.makedirs(args.path, exist_ok=True)
             print(f"Note: Created directory {args.path}")
+            print("-" * 50)
         except OSError as e:
             print(f"Error: Cannot create directory {args.path}: {e}", file=sys.stderr)
             sys.exit(1)
@@ -48,10 +84,12 @@ def main():
     args = parse_arguments()
     check_args(args)
 
-    print(f"Target URL: {args.url}")
-    print(f"Recursive: {args.recursive}")
-    print(f"Depth Level: {args.level}")
-    print(f"Save Path: {args.path}")
+    spider = Spider(
+        save_path=args.path,
+        max_depth=args.level
+    )
+
+    spider.run(args.url)
 
     # initialization: save parameters
     # parse page: find images, extract src
