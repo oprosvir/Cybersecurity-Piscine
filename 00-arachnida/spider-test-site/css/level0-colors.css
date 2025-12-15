@@ -1,0 +1,29 @@
+/* Цветовая схема для Level 0 - голубой/фиолетовый */
+
+.gradient-text {
+    background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+h2 {
+    color: #00d4ff;
+}
+
+.level-badge {
+    background: #00d4ff;
+    color: #1a1a2e;
+}
+
+.info-box {
+    border-left-color: #00d4ff;
+}
+
+.nav-link:not(.nav-back):not(.nav-home) {
+    background: linear-gradient(135deg, #7b2cbf, #00d4ff);
+}
+
+.depth-dot.active {
+    background: #00d4ff;
+}

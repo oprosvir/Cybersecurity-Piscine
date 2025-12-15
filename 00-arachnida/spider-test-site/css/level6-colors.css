@@ -1,0 +1,34 @@
+/* Цветовая схема для Level 6 - красный/светло-красный */
+
+.gradient-text {
+    background: linear-gradient(90deg, #eb4d4b, #ff7979);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+h2 {
+    color: #eb4d4b;
+}
+
+.level-badge {
+    background: #eb4d4b;
+    color: #1a1a2e;
+}
+
+.info-box {
+    border-left-color: #eb4d4b;
+}
+
+.nav-link:not(.nav-back):not(.nav-home) {
+    background: linear-gradient(135deg, #ff7979, #eb4d4b);
+}
+
+.depth-dot.active {
+    background: #eb4d4b;
+    box-shadow: 0 0 10px #eb4d4b;
+}
+
+.stat-value {
+    color: #eb4d4b;
+}

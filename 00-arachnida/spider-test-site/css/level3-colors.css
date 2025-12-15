@@ -1,0 +1,34 @@
+/* Цветовая схема для Level 3 - зеленый/светло-зеленый */
+
+.gradient-text {
+    background: linear-gradient(90deg, #6ab04c, #badc58);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+h2 {
+    color: #6ab04c;
+}
+
+.level-badge {
+    background: #6ab04c;
+    color: #1a1a2e;
+}
+
+.info-box {
+    border-left-color: #6ab04c;
+}
+
+.nav-link:not(.nav-back):not(.nav-home) {
+    background: linear-gradient(135deg, #badc58, #6ab04c);
+}
+
+.depth-dot.active {
+    background: #6ab04c;
+    box-shadow: 0 0 10px #6ab04c;
+}
+
+.stat-value {
+    color: #6ab04c;
+}

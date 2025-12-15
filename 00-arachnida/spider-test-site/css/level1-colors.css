@@ -1,0 +1,34 @@
+/* Цветовая схема для Level 1 - красный/оранжевый */
+
+.gradient-text {
+    background: linear-gradient(90deg, #ff6b6b, #ee5a24);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+h2 {
+    color: #ff6b6b;
+}
+
+.level-badge {
+    background: #ff6b6b;
+    color: #1a1a2e;
+}
+
+.info-box {
+    border-left-color: #ff6b6b;
+}
+
+.nav-link:not(.nav-back):not(.nav-home) {
+    background: linear-gradient(135deg, #ee5a24, #ff6b6b);
+}
+
+.depth-dot.active {
+    background: #ff6b6b;
+    box-shadow: 0 0 10px #ff6b6b;
+}
+
+.stat-value {
+    color: #ff6b6b;
+}

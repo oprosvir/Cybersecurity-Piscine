@@ -1,0 +1,34 @@
+/* Цветовая схема для Level 5 - фиолетовый/розовый */
+
+.gradient-text {
+    background: linear-gradient(90deg, #be2edd, #e056fd);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+h2 {
+    color: #be2edd;
+}
+
+.level-badge {
+    background: #be2edd;
+    color: #1a1a2e;
+}
+
+.info-box {
+    border-left-color: #be2edd;
+}
+
+.nav-link:not(.nav-back):not(.nav-home) {
+    background: linear-gradient(135deg, #e056fd, #be2edd);
+}
+
+.depth-dot.active {
+    background: #be2edd;
+    box-shadow: 0 0 10px #be2edd;
+}
+
+.stat-value {
+    color: #be2edd;
+}
