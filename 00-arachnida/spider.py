@@ -4,12 +4,15 @@ import argparse
 import os
 import sys
 import requests
+from bs4 import BeautifulSoup
 
 class Spider:
+    IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.bmp'}
 
     def __init__(self, save_path, max_depth):
         self.save_path = save_path
         self.max_depth = max_depth
+        self.downloaded_images = set()
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (compatible; Spider/1.0)'
         }
@@ -26,6 +29,7 @@ class Spider:
 
        print("-" * 50)
        print(f"Crawling complete!")
+       print(f"Downloaded {len(self.downloaded_images)} images")
     
     def crawl(self, url):
         try:
@@ -33,10 +37,25 @@ class Spider:
             response.raise_for_status()
             html = response.text
             print(f"html page:\n{html}")
+
+            images = self.parse_image_urls(html)
+            print(f"images:\n{images}")
+
         except requests.exceptions.RequestException as e:
             print(f"Error: Failed to fetch {url}: {e}", file=sys.stderr)
         except Exception as e:
             print(f"Error: Unexpected error processing {url}: {e}", file=sys.stderr)
+
+    def parse_image_urls(self, html):
+        soup = BeautifulSoup(html, 'html.parser')
+        images = []
+
+        for img in soup.find_all('img'):
+            src = img.get('src')
+            if src:
+                images.append(src)
+
+        return images
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Spider: Web Image Scraper')
