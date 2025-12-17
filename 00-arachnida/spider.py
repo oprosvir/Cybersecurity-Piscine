@@ -5,6 +5,7 @@ import os
 import sys
 import requests
 from bs4 import BeautifulSoup
+from urllib.parse import urljoin, urlparse
 
 class Spider:
     IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.bmp'}
@@ -13,6 +14,7 @@ class Spider:
         self.save_path = save_path
         self.max_depth = max_depth
         self.downloaded_images = set()
+        self.visited_urls = set()
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (compatible; Spider/1.0)'
         }
@@ -29,17 +31,23 @@ class Spider:
 
        print("-" * 50)
        print(f"Crawling complete!")
+       print(f"Visited {len(self.visited_urls)} pages")
        print(f"Downloaded {len(self.downloaded_images)} images")
     
     def crawl(self, url):
+        self.visited_urls.add(url)
+
         try:
             response = requests.get(url, headers=self.headers, timeout=10)
             response.raise_for_status()
             html = response.text
-            print(f"html page:\n{html}")
+            # print(f"html page:\n{html}")
 
             images = self.parse_image_urls(html)
-            print(f"images:\n{images}")
+            # print(f"images:\n{images}")
+
+            for img_url in images:
+                self.download_image(img_url, url)
 
         except requests.exceptions.RequestException as e:
             print(f"Error: Failed to fetch {url}: {e}", file=sys.stderr)
@@ -56,6 +64,43 @@ class Spider:
                 images.append(src)
 
         return images
+
+    def download_image(self, img_url, base_url):
+        absolute_url = urljoin(base_url, img_url)
+        
+        if not self.is_valid_image_url(absolute_url):
+            return
+        
+        if absolute_url in self.downloaded_images:
+            return
+        
+        try:
+            response = requests.get(absolute_url, headers=self.headers, timeout=10)
+            response.raise_for_status()
+            
+            filename = os.path.basename(urlparse(absolute_url).path)
+            filepath = os.path.join(self.save_path, filename)
+            counter = 1
+            while os.path.exists(filepath):
+                name, ext = os.path.splitext(filename)
+                filepath = os.path.join(self.save_path, f"{name}_{counter}{ext}")
+                counter += 1
+            
+            with open(filepath, 'wb') as f:
+                f.write(response.content)
+            
+            self.downloaded_images.add(absolute_url)
+            print(f"Downloaded: {filename}")
+        
+        except requests.exceptions.RequestException as e:
+            print(f"Error downloading {absolute_url}: {e}", file=sys.stderr)
+        except Exception as e:
+            print(f"Unexpected error downloading {absolute_url}: {e}", file=sys.stderr)
+
+    def is_valid_image_url(self, url):
+        parsed = urlparse(url)
+        ext = os.path.splitext(parsed.path)[1].lower()
+        return ext in self.IMAGE_EXTENSIONS
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Spider: Web Image Scraper')
@@ -110,9 +155,13 @@ def main():
 
     spider.run(args.url)
 
-    # initialization: save parameters
-    # parse page: find images, extract src
-    # download and save
+    # initialization: save parameters - Done
+    # parse page: find images, extract src - Done
+    # download and save:
+    #       normalize img src links - Done
+    #       check for duplicates - Done
+    #       handle recursion
+    #       download in self.save_path - Done
 
 if __name__ == "__main__":
     main()
