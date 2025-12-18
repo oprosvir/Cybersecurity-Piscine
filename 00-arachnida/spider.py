@@ -34,7 +34,13 @@ class Spider:
        print(f"Visited {len(self.visited_urls)} pages")
        print(f"Downloaded {len(self.downloaded_images)} images")
     
-    def crawl(self, url):
+    def crawl(self, url, depth=0):
+        if url in self.visited_urls:
+            return
+        
+        if depth > self.max_depth:
+            return
+
         self.visited_urls.add(url)
 
         try:
@@ -48,6 +54,11 @@ class Spider:
 
             for img_url in images:
                 self.download_image(img_url, url)
+
+            if depth < self.max_depth:
+                links = self.extract_links(html, url)
+                for link in links:
+                    self.crawl(link, depth + 1)
 
         except requests.exceptions.RequestException as e:
             print(f"Error: Failed to fetch {url}: {e}", file=sys.stderr)
@@ -101,6 +112,25 @@ class Spider:
         parsed = urlparse(url)
         ext = os.path.splitext(parsed.path)[1].lower()
         return ext in self.IMAGE_EXTENSIONS
+    
+    def extract_links(self, html, base_url):
+        soup = BeautifulSoup(html, 'html.parser')
+        links = []
+
+        for link in soup.find_all('a'):
+            href = link.get('href')
+            # print(f"link parsed:{href}")
+            if href:
+                absolute_url = urljoin(base_url, href)
+                if self.is_same_domain(absolute_url, base_url):
+                    links.append(absolute_url)
+        # print(f"links saved:\n{links}")
+        return links
+    
+    def is_same_domain(self, url1, url2):
+        domain1 = urlparse(url1).netloc
+        domain2 = urlparse(url2).netloc
+        return domain1 == domain2
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Spider: Web Image Scraper')
@@ -153,15 +183,11 @@ def main():
         max_depth=args.level
     )
 
-    spider.run(args.url)
-
-    # initialization: save parameters - Done
-    # parse page: find images, extract src - Done
-    # download and save:
-    #       normalize img src links - Done
-    #       check for duplicates - Done
-    #       handle recursion
-    #       download in self.save_path - Done
+    try:
+        spider.run(args.url)
+    except KeyboardInterrupt:
+        print("\nInterrupted by user")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
