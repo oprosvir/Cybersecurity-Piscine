@@ -7,6 +7,11 @@ import hashlib
 import sys
 import os
 import qrcode
+import time
+import struct
+import hmac
+
+TIME_STEP = 30
 
 def validate(hex_key):
     if len(hex_key) < 64:
@@ -72,10 +77,28 @@ def store_key(filepath):
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
+def compute_hotp(secret, counter, digits=6):
+    # HOTP implementation from RFC 4226
+    key = bytes.fromhex(secret)
+    counter_bytes = struct.pack('>Q', counter)  # 8 byte big-endian
+    hmac_digest = hmac.new(key, counter_bytes, hashlib.sha1).digest()
+    offset = hmac_digest[-1] & 0x0F
+    truncated = struct.unpack('>I', hmac_digest[offset:offset+4])[0] & 0x7FFFFFFF
+    otp = truncated % (10 ** digits)
+    return f"{otp:06d}"
+
+def compute_totp(secret):
+    # TOTP: C = (T - 0) / 30
+    T = int(time.time())
+    C = T // TIME_STEP
+    return compute_hotp(secret, C)
+
 def generate_otp(keyfile):
     try:
-        hex_key = decrypt(keyfile)
-        print(f"Decrypted key: {hex_key}")
+        secret = decrypt(keyfile)
+        otp = compute_totp(secret)
+        print(otp)
+
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)            
