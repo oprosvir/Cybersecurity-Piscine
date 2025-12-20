@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
+from cryptography.fernet import Fernet
 import argparse
 import base64
+import hashlib
 import sys
+import os
 import qrcode
 
 def validate(hex_key):
@@ -12,6 +15,39 @@ def validate(hex_key):
         return False
     return True
 
+def get_key(salt):
+    env_data = os.getenv('USER', '') + '/ft_otp_secret_2025'
+    kdf = hashlib.pbkdf2_hmac(
+        'sha256',
+        env_data.encode(),
+        salt,
+        100000
+    )
+    return base64.urlsafe_b64encode(kdf)
+
+def encrypt(hex_key, filename='ft_otp.key'):
+    salt = os.urandom(16)
+    key = get_key(salt)
+    f = Fernet(key)
+
+    token = f.encrypt(hex_key.encode())
+    with open(filename, 'wb') as file:
+        file.write(salt + token)
+
+    os.chmod(filename, 0o600)
+    print(f"Key was successfully saved in {filename}")
+
+def decrypt(filename='ft_otp.key'):
+    with open(filename, 'rb') as file:
+       data = file.read()
+
+    salt = data[:16]
+    token = data[16:]
+    
+    key = get_key(salt)
+    f = Fernet(key)
+    return f.decrypt(token).decode()
+
 def generate_qr_code(hex_key):
     key_bytes = bytes.fromhex(hex_key)
     base32_key = base64.b32encode(key_bytes).decode('utf-8').rstrip('=')
@@ -19,6 +55,7 @@ def generate_qr_code(hex_key):
     uri = f"otpauth://totp/ft_otp?secret={base32_key}&issuer=oprosvir"
     img = qrcode.make(uri)
     img.save("ft_otp_qr.png")
+    print("QR code saved as ft_otp_qr.png")
 
 def store_key(filepath):
     try:
@@ -28,15 +65,20 @@ def store_key(filepath):
             print("Error: key must be at least 64 hexadecimal characters", file=sys.stderr)
             sys.exit(1)
 
+        encrypt(hex_key)
         generate_qr_code(hex_key)
-        print("QR code saved as ft_otp_qr.png")
         
     except Exception as e:
-        print(f"Error: {filepath}: {e}", file=sys.stderr)
+        print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
 def generate_otp(keyfile):
-    print(f"Generate new temporary password {keyfile}")
+    try:
+        hex_key = decrypt(keyfile)
+        print(f"Decrypted key: {hex_key}")
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)            
 
 def main():
     parser = argparse.ArgumentParser(
