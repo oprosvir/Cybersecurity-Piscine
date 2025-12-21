@@ -77,14 +77,18 @@ def store_key(filepath):
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
 
-def compute_hotp(secret, counter, digits=6):
+def compute_hotp(secret, counter):
     # HOTP implementation from RFC 4226
     key = bytes.fromhex(secret)
-    counter_bytes = struct.pack('>Q', counter)  # 8 byte big-endian
+    counter_bytes = counter.to_bytes(8, byteorder='big')
     hmac_digest = hmac.new(key, counter_bytes, hashlib.sha1).digest()
-    offset = hmac_digest[-1] & 0x0F
-    truncated = struct.unpack('>I', hmac_digest[offset:offset+4])[0] & 0x7FFFFFFF
-    otp = truncated % (10 ** digits)
+
+    offset = hmac_digest[19] & 0xf
+    code = ((hmac_digest[offset] & 0x7f) << 24 |
+            (hmac_digest[offset + 1] & 0xff) << 16 |
+            (hmac_digest[offset + 2] & 0xff) << 8 |
+            (hmac_digest[offset + 3] & 0xff))
+    otp = code % 1000000
     return f"{otp:06d}"
 
 def compute_totp(secret):
