@@ -1,0 +1,8 @@
+services:
+  ft_onion:
+    build: .
+    container_name: ft_onion
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+      
