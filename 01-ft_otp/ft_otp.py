@@ -8,7 +8,6 @@ import sys
 import os
 import qrcode
 import time
-import struct
 import hmac
 
 TIME_STEP = 30
