@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOID GALLERY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --neon-green: #00ff41;
+            --neon-purple: #b347d9;
+            --dark-bg: #0a0a0f;
+            --card-bg: #12121a;
+            --text-dim: #666;
+            --text-light: #aaa;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--neon-green);
+            font-family: 'Share Tech Mono', monospace;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Scanline effect */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.1) 0px,
+                rgba(0, 0, 0, 0.1) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            z-index: 1000;
+        }
+
+        /* Glitch animation */
+        @keyframes glitch {
+            0% { text-shadow: 2px 0 var(--neon-purple), -2px 0 var(--neon-green); }
+            25% { text-shadow: -2px 0 var(--neon-purple), 2px 0 var(--neon-green); }
+            50% { text-shadow: 2px 2px var(--neon-purple), -2px -2px var(--neon-green); }
+            75% { text-shadow: -2px 2px var(--neon-purple), 2px -2px var(--neon-green); }
+            100% { text-shadow: 2px 0 var(--neon-purple), -2px 0 var(--neon-green); }
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            92% { opacity: 1; }
+            93% { opacity: 0.8; }
+            94% { opacity: 1; }
+            95% { opacity: 0.9; }
+            96% { opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 5px var(--neon-green), 0 0 10px var(--neon-green); }
+            50% { box-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green), 0 0 30px var(--neon-green); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            border-bottom: 1px solid #1a1a2e;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: 8px;
+            animation: glitch 3s infinite, flicker 5s infinite;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--neon-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.warning {
+            background: #ffaa00;
+        }
+
+        /* Search Section */
+        .search-section {
+            max-width: 600px;
+            margin: 0 auto 50px;
+        }
+
+        .search-container {
+            position: relative;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-input {
+            flex: 1;
+            background: var(--card-bg);
+            border: 1px solid #2a2a3e;
+            padding: 15px 20px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1rem;
+            color: var(--neon-green);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .search-btn {
+            background: transparent;
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            padding: 15px 30px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .search-btn:hover {
+            background: var(--neon-green);
+            color: var(--dark-bg);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+        }
+
+        .search-hint {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        /* Gallery Grid */
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #1a1a2e;
+        }
+
+        .results-count {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid #1a1a2e;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card-image-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            border-color: var(--neon-purple);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(179, 71, 217, 0.2);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            filter: grayscale(30%) contrast(1.1);
+            transition: filter 0.3s ease;
+        }
+
+        .card:hover .card-image {
+            filter: grayscale(0%) contrast(1.1);
+        }
+
+        .card-overlay {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 5px 10px;
+            font-size: 0.7rem;
+            color: var(--neon-green);
+            border: 1px solid var(--neon-green);
+            z-index: 10;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .card-id {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #1a1a2e;
+        }
+
+        .card-price {
+            color: var(--neon-purple);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .card-price span {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+
+        .card-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .card-rating .stars {
+            color: #ffaa00;
+        }
+
+        .card-seller {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            margin-top: 10px;
+        }
+
+        .card-seller .verified {
+            color: var(--neon-green);
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-dim);
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 2px solid var(--card-bg);
+            border-top-color: var(--neon-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-dim);
+            grid-column: 1 / -1;
+        }
+
+        .empty-state .icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+            border-top: 1px solid #1a1a2e;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+        }
+
+        .footer-warning {
+            color: #ff4444;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ff4444;
+            display: inline-block;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .footer-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--neon-green);
+        }
+
+        /* Error message */
+        .error-message {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid #ff4444;
+            color: #ff4444;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2rem;
+                letter-spacing: 4px;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+
+            .status-bar {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="logo">VOID GALLERY</h1>
+            <p class="tagline">// Secure Image Acquisition Network //</p>
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="status-dot"></span>
+                    <span>TOR CONNECTED</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-dot"></span>
+                    <span>ENCRYPTION: ACTIVE</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-dot warning"></span>
+                    <span id="visitor-count">VISITORS: ---</span>
+                </div>
+            </div>
+        </header>
+
+        <section class="search-section">
+            <div class="search-container">
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    id="search-input"
+                    placeholder="Enter search query..."
+                    autocomplete="off"
+                >
+                <button class="search-btn" id="search-btn">ACQUIRE</button>
+            </div>
+            <p class="search-hint">[Enter target keywords to search the void]</p>
+        </section>
+
+        <main>
+            <div class="gallery-header">
+                <span class="results-count" id="results-count">Awaiting query...</span>
+            </div>
+            <div id="gallery" class="gallery-grid">
+                <div class="empty-state">
+                    <div class="icon">◢◤</div>
+                    <p>NO ACTIVE LISTINGS</p>
+                    <p style="margin-top: 10px; font-size: 0.8rem;">Initialize search to access inventory</p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="footer-warning">⚠ FOR EDUCATIONAL PURPOSES ONLY ⚠</div>
+            <p>All connections routed through onion network</p>
+            <p style="margin-top: 5px;">Images provided by Unsplash API</p>
+            <div class="footer-links">
+                <a href="#">[ABOUT]</a>
+                <a href="#">[PGP KEY]</a>
+                <a href="#">[WARRANT CANARY]</a>
+            </div>
+            <p style="margin-top: 20px; opacity: 0.5;">ft_onion // 42 Cybersecurity Piscine</p>
+        </footer>
+    </div>
+
+    <script>        
+        // Unsplash API Configuration
+        const UNSPLASH_API_KEY = 'API_ACCESS_KEY';
+        const UNSPLASH_API_URL = 'https://api.unsplash.com/search/photos';
+
+        // DOM Elements
+        const searchInput = document.getElementById('search-input');
+        const searchBtn = document.getElementById('search-btn');
+        const gallery = document.getElementById('gallery');
+        const resultsCount = document.getElementById('results-count');
+        const visitorCount = document.getElementById('visitor-count');
+
+        // Generate fake visitor count
+        visitorCount.textContent = `VISITORS: ${Math.floor(Math.random() * 500 + 100)}`;
+
+        // Utility functions
+        function generateFakeId() {
+            return 'VG-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        }
+
+        function generateFakePrice() {
+            return (Math.random() * 0.5 + 0.001).toFixed(4);
+        }
+
+        function generateFakeRating() {
+            return (Math.random() * 2 + 3).toFixed(1);
+        }
+
+        function generateFakeSeller() {
+            const adjectives = ['shadow', 'dark', 'crypto', 'void', 'ghost', 'phantom', 'silent', 'hidden'];
+            const nouns = ['dealer', 'vendor', 'merchant', 'trader', 'broker', 'agent'];
+            const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+            const noun = nouns[Math.floor(Math.random() * nouns.length)];
+            return `${adj}_${noun}_${Math.floor(Math.random() * 999)}`;
+        }
+
+        function generateStars(rating) {
+            const fullStars = Math.floor(rating);
+            return '★'.repeat(fullStars) + '☆'.repeat(5 - fullStars);
+        }
+
+        // Loading state
+        function showLoading() {
+            gallery.innerHTML = `
+                <div class="loading" style="grid-column: 1/-1;">
+                    <div class="loading-spinner"></div>
+                    <p>SEARCHING THE VOID...</p>
+                    <p style="font-size: 0.75rem; margin-top: 10px; opacity: 0.5;">Routing through onion layers...</p>
+                </div>
+            `;
+        }
+
+        // Error state
+        function showError(message) {
+            gallery.innerHTML = `
+                <div class="error-message" style="grid-column: 1/-1;">
+                    <p>⚠ CONNECTION ERROR</p>
+                    <p style="font-size: 0.85rem; margin-top: 10px;">${message}</p>
+                </div>
+            `;
+        }
+
+        // Create card element
+        function createCard(photo) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            
+            const fakeId = generateFakeId();
+            const fakePrice = generateFakePrice();
+            const fakeRating = generateFakeRating();
+            const fakeSeller = generateFakeSeller();
+            const stars = generateStars(parseFloat(fakeRating));
+
+            card.innerHTML = `
+                <div class="card-image-container">
+                    <div class="card-overlay">IN STOCK</div>
+                    <img 
+                        src="${photo.urls.regular}" 
+                        alt="${photo.alt_description || 'Void item'}" 
+                        class="card-image"
+                        loading="lazy"
+                    >
+                </div>
+                <div class="card-content">
+                    <p class="card-id">${fakeId}</p>
+                    <h3 class="card-title">${photo.alt_description || 'CLASSIFIED ITEM'}</h3>
+                    <div class="card-meta">
+                        <div class="card-price">
+                            ₿ ${fakePrice}
+                            <span>BTC</span>
+                        </div>
+                        <div class="card-rating">
+                            <span class="stars">${stars}</span>
+                            <span>(${fakeRating})</span>
+                        </div>
+                    </div>
+                    <p class="card-seller">
+                        Seller: <span class="verified">✓</span> ${fakeSeller}
+                    </p>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Search function
+        async function searchImages(query) {
+            if (!query.trim()) return;
+
+            showLoading();
+            resultsCount.textContent = 'Searching...';
+
+            try {
+                const response = await fetch(
+                    `${UNSPLASH_API_URL}?query=${encodeURIComponent(query)}&per_page=12&client_id=${UNSPLASH_API_KEY}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.results.length === 0) {
+                    gallery.innerHTML = `
+                        <div class="empty-state" style="grid-column: 1/-1;">
+                            <div class="icon">∅</div>
+                            <p>NO RESULTS FOUND</p>
+                            <p style="margin-top: 10px; font-size: 0.8rem;">The void returned empty for "${query}"</p>
+                        </div>
+                    `;
+                    resultsCount.textContent = '0 listings found';
+                    return;
+                }
+
+                gallery.innerHTML = '';
+                data.results.forEach(photo => {
+                    gallery.appendChild(createCard(photo));
+                });
+
+                resultsCount.textContent = `${data.results.length} listings found for "${query}"`;
+
+            } catch (error) {
+                console.error('Search error:', error);
+                showError('Failed to connect to image source. Check your API key or try again.');
+                resultsCount.textContent = 'Search failed';
+            }
+        }
+
+        // Event listeners
+        searchBtn.addEventListener('click', () => {
+            searchImages(searchInput.value);
+        });
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchImages(searchInput.value);
+            }
+        });
+
+        searchInput.addEventListener('input', (e) => {
+            if (e.target.value.toLowerCase() === 'void') {
+                e.target.style.color = '#b347d9';
+            } else {
+                e.target.style.color = '';
+            }
+        });
+    </script>
+</body>
+</html>
