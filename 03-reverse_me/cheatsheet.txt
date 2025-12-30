@@ -1,0 +1,57 @@
+# Reverse Engineering Cheatsheet
+
+# Install 32-bit libraries (if on 64-bit system)
+sudo apt install libc6-i386
+
+# Setup GDB with GEF
+sudo apt-get install -y gdb wget
+bash -c "$(wget https://gef.blah.cat/sh -O -)"
+
+# Basic Commands
+file ./program                   # load the binary
+strings ./program                # search for hints
+gdb ./program                    # start gdb
+(gdb) info functions             # list functions
+(gdb) disassemble main           # disassemble main function
+(gdb) break strcmp               # set breakpoint at strcmp
+(gdb) run                        # run the program   
+
+
+# x86 Registers 32-bit
+ebp - Base pointer (frame pointer)
+esp - Stack pointer (top of stack)
+eip - Instruction pointer (next instruction)
+ebx - Base register (general purpose)
+esi - Source index (string/source operations)
+edi - Destination index (string/destination operations)
+eax - Accumulator register (return value)
+ecx - Counter register (looping)
+edx - Data register (I/O operations)
+
+DWORD PTR - 4 bytes (32 bits)
+WORD PTR  - 2 bytes (16 bits)
+
+# Common Instructions
+mov  dst, src     dst = src
+lea  dst, [src]   dst = &src
+push src          ESP-=4; [ESP]=src (on stack)
+pop  dst          dst = [ESP]; ESP+=4 (from stack)
+
+add  dst, src     dst = dst + src
+sub  dst, src     dst = dst - src
+inc  dst          dst = dst + 1
+dec  dst          dst = dst - 1
+
+cmp  op1, op2     set flags based on op1 - op2
+test op1, op2     set flags based on op1 & op2
+
+call func        call function
+ret              return from function
+
+# Conditional Jumps
+# after cmp or test instruction
+je   label       jump if equal (ZF=1)
+jne  label       jump if not equal (ZF=0)
+jg   label       jump if greater (SF=OF and ZF=0)
+jl   label       jump if less (SF!=OF)
+jmp  label       unconditional jump
