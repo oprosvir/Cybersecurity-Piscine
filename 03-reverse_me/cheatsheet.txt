@@ -14,7 +14,12 @@ gdb ./program                    # start gdb
 (gdb) info functions             # list functions
 (gdb) disassemble main           # disassemble main function
 (gdb) break strcmp               # set breakpoint at strcmp
-(gdb) run                        # run the program   
+(gdb) run                        # run the program
+(gdb) x/s *(char**)($esp+4)      # examine string at esp+4 (1nd argument)
+(gdb) x/s *(char**)($esp+8)      # examine string at esp+8 (2rd argument)
+(gdb) info registers eax         # check eax register (return value)
+(gdb) continue                   # continue execution
+(gdb) quit                       # exit gdb
 
 
 # x86 Registers 32-bit
