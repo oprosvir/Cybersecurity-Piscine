@@ -3,7 +3,7 @@
 
 int main(void)
 {
-    char *password = "__stack_check";
+    char password[] = "__stack_check";
     char input[100];
 
     printf("Please enter key: ");
