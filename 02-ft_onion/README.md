@@ -115,6 +115,8 @@ The web interface features an **interactive Single Page Application (SPA)** styl
 - This is a **fake/demo marketplace** for educational purposes only
 - Product images powered by Unsplash API
 
+> 🌐 **Live demo (clearnet):** [https://void-gallery.netlify.app/](https://void-gallery.netlify.app/)
+
 ### Unsplash API Setup
 
 To display product images, you need to configure your Unsplash API key:
