@@ -107,7 +107,7 @@ We replace the `jne` instruction (6 bytes: `0f 85 16 00 00 00`) with 6 NOP instr
 
 ### Finding the file offset
 
-To patch a file we need the byte position of the instruction. `readelf -S` gives us section addresses:
+To patch a file, we need the byte position of the instruction in the `.text` section (which contains the program code: functions and instructions). `readelf -S` gives us section addresses:
 
 ```bash
 readelf -S ./level1 | grep ".text"
@@ -116,10 +116,15 @@ readelf -S ./level1 | grep ".text"
 #                       vaddr     file offset
 ```
 
+- **VMA (Virtual Memory Address)**: The address where the section loads in RAM when the program runs (relative to the base in PIE binaries).
+- **File offset**: The position of the section's bytes in the file on disk.
+
+`objdump` and GDB show VMA — addresses in memory. Hex editor works with the file on disk — it needs byte positions in the file. If VMA == file offset, the address is the position. Otherwise, calculate: `file_pos = VMA - section_VMA + section_file_offset`.
+
 Since `vaddr == file offset` for `.text` (both `0x1090`), the file offset of any instruction equals its address directly:
 
 ```
-jne is at vaddr 0x1244  ->  file offset 0x1244 = 4676 decimal
+jne is at vaddr 0x1244 → file offset 0x1244
 ```
 
 ### Commands
@@ -129,7 +134,7 @@ jne is at vaddr 0x1244  ->  file offset 0x1244 = 4676 decimal
 cp level1 level1_patched
 
 # Replace jne with NOP
-printf '\x90\x90\x90\x90\x90\x90' | dd of=level1_patched bs=1 seek=4676 conv=notrunc
+printf '\x90\x90\x90\x90\x90\x90' | dd of=level1_patched bs=1 seek=0x1244 conv=notrunc
 
 # Test
 echo "wrongpassword" | ./level1_patched  # Should output "Good job."
