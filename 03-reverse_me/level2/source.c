@@ -2,59 +2,63 @@
 #include <string.h>
 #include <stdlib.h>
 
-void no() {
+void no(void) {
     puts("Nope.");
     exit(1);
 }
 
-void ok() {
+void ok(void) {
     puts("Good job.");
 }
 
-int main() {
-    char input[100];
-    char result[9];
-    int i, j;
-    char temp[4];
+int main(void) {
+    int scan_result;    // ebp-0xc
+    int j;              // ebp-0x10
+    int i;              // ebp-0x14
+
+    char out[9];        // ebp-0x1d
+    char input[24];     // ebp-0x35
+    char temp[4];       // ebp-0x39
 
     printf("Please enter key: ");
-    if (scanf("%s", input) != 1) {
+    scan_result = scanf("%23s", input);    // read 23 symbols max + '\0'
+    if (scan_result != 1) {
         no();
     }
-
-    if (input[0] != '0' || input[1] != '0') {
+    if (input[1] != '0') {
+        no();
+    }
+    if (input[0] != '0') {
         no();
     }
 
     fflush(stdin);
-    memset(result, 0, 9);
-    result[0] = 'd';
-    
-    i = 2;
-    j = 1;
 
-    while (strlen(result) < 8) {
+    memset(out, 0, 9);
+    out[0] = 'd';
+    temp[3] = '\0';
+
+    i = 2;      // read from input after "00"
+    j = 1;      // write to out after "d"
+
+    while (strlen(out) < 8) {
         if (i >= strlen(input)) break;
 
         temp[0] = input[i];
         temp[1] = input[i+1];
         temp[2] = input[i+2];
-        temp[3] = '\0';
         
-        int val = atoi(temp);
-        result[j] = (char)val;
-        
+        out[j] = (char)atoi(temp);        
         i += 3;
         j += 1;
     }
     
-    result[j] = '\0';
+    out[j] = '\0';
 
-    if (strcmp(result, "delabere") == 0) {
+    if (strcmp(out, "delabere") == 0)
         ok();
-    } else {
+    else
         no();
-    }
 
     return 0;
 }

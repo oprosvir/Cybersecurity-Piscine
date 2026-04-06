@@ -3,9 +3,9 @@
 ```c
 Dump of assembler code for function main:
    // prologue
-   0x000011c0 <+0>:     push   %ebp
-   0x000011c1 <+1>:     mov    %esp,%ebp
-   0x000011c3 <+3>:     push   %ebx
+   0x000011c0 <+0>:     push   %ebp                // saves caller's base pointer on stack
+   0x000011c1 <+1>:     mov    %esp,%ebp           // sets bp to current stack pointer
+   0x000011c3 <+3>:     push   %ebx                // save %ebx register
    0x000011c4 <+4>:     sub    $0x84,%esp          // allocate 132 bytes on stack
 
    // PIE trick: get current EIP into ebx
