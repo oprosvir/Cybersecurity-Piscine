@@ -2,7 +2,7 @@
 
 ## 1. Binary Analysis
 
-The binary is an ELF 32-bit LSB PIE executable. Using GDB, we check what functions are in the binary.
+The binary is an ELF 32-bit LSB PIE executable. Using GDB, we inspect the available functions:
 
 ```bash
 $ gdb ./level2
@@ -19,7 +19,7 @@ $ gdb ./level2
 0x000015b0  xyxxd
 ```
 
-We look at the analysis in Decompiler Explorer from Ghidra. Except for `ok`, `no`, and `main`, the other functions are distractions, printing long text and not participating in the logic. We disassemble the functions, restore the logic from assembly instructions, and the decompiled code from Ghidra.
+Only `ok`, `no`, and `main` are relevant to the program logic. The other functions are distractions that print text and do not affect the password check.
 
 ```bash
 (gdb) disas main
@@ -27,7 +27,7 @@ We look at the analysis in Decompiler Explorer from Ghidra. Except for `ok`, `no
 (gdb) disas ok
 ```
 
-Strings can be read from .rodata, for example `0x000012ed <+29>:    lea    -0x42e5(%ebx),%eax`. The base from which the calculation is made in this binary: 0x7000 (from disassembly).
+Strings are stored in `.rodata` and accessed relative to the GOT base. For example:
 
 ```bash
 (gdb) print /x 0x7000-0x42e5
