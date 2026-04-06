@@ -124,7 +124,7 @@ readelf -S ./level1 | grep ".text"
 Since `vaddr == file offset` for `.text` (both `0x1090`), the file offset of any instruction equals its address directly:
 
 ```
-jne is at vaddr 0x1244 → file offset 0x1244
+jne is at vaddr 0x1244 → file offset 0x1244 = 4676 in decimal
 ```
 
 ### Commands
@@ -134,7 +134,7 @@ jne is at vaddr 0x1244 → file offset 0x1244
 cp level1 level1_patched
 
 # Replace jne with NOP
-printf '\x90\x90\x90\x90\x90\x90' | dd of=level1_patched bs=1 seek=0x1244 conv=notrunc
+printf '\x90\x90\x90\x90\x90\x90' | dd of=level1_patched bs=1 seek=4676 conv=notrunc
 
 # Test
 echo "wrongpassword" | ./level1_patched  # Should output "Good job."

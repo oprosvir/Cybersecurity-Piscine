@@ -36,7 +36,7 @@ $4 = 0x2d1b
 0x2d1b: "Please enter key: "
 ```
 
-## 2. Overall Logic Summary
+## 2. Password Validation Logic
 
 - The program expects input starting with `'00'`, followed by groups of 3 digits (e.g., `"00100102"`).
 - It builds an output string starting with `'d'`.
@@ -58,4 +58,51 @@ So the input is: `'00'` (prefix) + `'101'` + `'108'` + `'097'` + `'098'` + `'101
 
 ```
 00101108097098101114101
+```
+
+## Bonus: Patching to Accept Any Password
+
+The bonus goal here is to make the program call `ok()` regardless of input. To accept any input, we need to patch 3 checks: 2 `no()` calls before the loop, and the final `strcmp` check.
+
+First inspect the binary to confirm the exact bytes:
+
+```bash
+objdump -d ./level2
+```
+
+| Check           | Address          | Opcode | What to patch |
+| --------------- | ---------------- | ------ | ------------- |
+| `input[1] != '0'` | `0x1340` - `call no` | `e8 db fe ff ff` | `nop` x5 |
+| `input[0] != '0'` | `0x1359` - `call no` | `e8 c2 fe ff ff` | `nop` x5 |
+| `strcmp != 0`     | `0x146d` - `jne`     | `0f 85 0d 00 00 00` | `nop` x6 |
+
+### Patch with `dd`
+
+```bash
+cp level2 level2_patched
+
+# input[1] check: 0x1340 = 4928
+printf '\x90\x90\x90\x90\x90' | dd of=./level2_patched bs=1 seek=4928 conv=notrunc
+
+# input[0] check: 0x1359 = 4953
+printf '\x90\x90\x90\x90\x90' | dd of=./level2_patched bs=1 seek=4953 conv=notrunc
+
+# strcmp jne (6 bytes): 0x146d = 5229
+printf '\x90\x90\x90\x90\x90\x90' | dd of=./level2_patched bs=1 seek=5229 conv=notrunc
+```
+
+Verify the patches:
+
+```bash
+objdump -d ./level2_patched | grep -A3 "1340:\|1359:\|146d:"
+```
+
+Test the patched binary:
+
+```bash
+echo "anything" | ./level2_patched
+# Good job.
+
+echo "xyz" | ./level2_patched
+# Good job.
 ```
