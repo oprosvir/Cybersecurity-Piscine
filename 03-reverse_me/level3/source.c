@@ -1,109 +1,66 @@
-void ___syscall_malloc(void)
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
-{
-  puts("Nope.");
-                    // WARNING: Subroutine does not return
-  exit(1);
+void ___syscall_malloc(void) {
+    puts("Nope.");
+    exit(1);
 }
 
-
-
-void ____syscall_malloc(void)
-
-{
-  puts("Good job.");
-  return;
+void ____syscall_malloc(void) {
+    puts("Good job.");
 }
 
+int main(void) {
+	int		scanf_ret;			// rbp-0x8
+	int     out_idx	= 1;		// rbp-0xc
+	int     cmp_result;			// rbp-0x10
+	long	in_idx	= 2;		// rbp-0x18
 
+	char    out[9];				// rbp-0x21
+	char    input[31];			// rbp-0x40
+	char    temp[4];			// rbp-0x44
 
-// WARNING: Globals starting with '_' overlap smaller symbols at the same address
+	printf("Please enter key: ");
 
-undefined8 main(void)
+	scanf_ret = scanf("%23s", input);
+	if (scanf_ret != 1)		___syscall_malloc();	// Nope
 
-{
-  ulong uVar1;
-  int iVar2;
-  size_t sVar3;
-  bool bVar4;
-  char local_4c;
-  char local_4b;
-  char local_4a;
-  undefined1 local_49;
-  char local_48 [31];
-  char local_29 [9];
-  ulong local_20;
-  int local_18;
-  int local_14;
-  int local_10;
-  undefined4 local_c;
-  
-  local_c = 0;
-  printf("Please enter key: ");
-  local_10 = __isoc99_scanf(&DAT_00102056);
-  if (local_10 != 1) {
-    ___syscall_malloc();
-  }
-  if (local_48[1] != '2') {
-    ___syscall_malloc();
-  }
-  if (local_48[0] != '4') {
-    ___syscall_malloc();
-  }
-  fflush(_stdin);
-  memset(local_29,0,9);
-  local_29[0] = '*';
-  local_49 = 0;
-  local_20 = 2;
-  local_14 = 1;
-  while( true ) {
-    sVar3 = strlen(local_29);
-    uVar1 = local_20;
-    bVar4 = false;
-    if (sVar3 < 8) {
-      sVar3 = strlen(local_48);
-      bVar4 = uVar1 < sVar3;
-    }
-    if (!bVar4) break;
-    local_4c = local_48[local_20];
-    local_4b = local_48[local_20 + 1];
-    local_4a = local_48[local_20 + 2];
-    iVar2 = atoi(&local_4c);
-    local_29[local_14] = (char)iVar2;
-    local_20 = local_20 + 3;
-    local_14 = local_14 + 1;
-  }
-  local_29[local_14] = '\0';
-  local_18 = strcmp(local_29,"********");
-  if (local_18 == -2) {
-    ___syscall_malloc();
-  }
-  else if (local_18 == -1) {
-    ___syscall_malloc();
-  }
-  else if (local_18 == 0) {
-    ____syscall_malloc();
-  }
-  else if (local_18 == 1) {
-    ___syscall_malloc();
-  }
-  else if (local_18 == 2) {
-    ___syscall_malloc();
-  }
-  else if (local_18 == 3) {
-    ___syscall_malloc();
-  }
-  else if (local_18 == 4) {
-    ___syscall_malloc();
-  }
-  else if (local_18 == 5) {
-    ___syscall_malloc();
-  }
-  else if (local_18 == 0x73) {
-    ___syscall_malloc();
-  }
-  else {
-    ___syscall_malloc();
-  }
-  return 0;
+	if (input[1] != '2')	___syscall_malloc();	// Nope
+    if (input[0] != '4')	___syscall_malloc();	// Nope
+
+	fflush(stdin);
+
+	memset(out, 0, 9);
+	out[0] = '*';
+	temp[3] = '\0';
+
+	while (strlen(out) < 8 && in_idx < strlen(input)) {
+		temp[0] = input[in_idx];
+		temp[1] = input[in_idx + 1];
+		temp[2] = input[in_idx + 2];
+
+		out[out_idx] = (char)(atoi(temp));
+
+		in_idx  += 3;
+		out_idx += 1;
+	}
+
+	out[out_idx] = '\0';
+
+	cmp_result = strcmp(out, "********");
+	switch (cmp_result) {
+		case -2: ___syscall_malloc(); break;  // fail
+		case -1: ___syscall_malloc(); break;  // fail
+		case 0: ____syscall_malloc(); break;  // success
+		case 1: ___syscall_malloc(); break;   // fail
+		case 2: ___syscall_malloc(); break;   // fail
+		case 3: ___syscall_malloc(); break;   // fail
+		case 4: ___syscall_malloc(); break;   // fail
+		case 5: ___syscall_malloc(); break;   // fail
+		case 115: ___syscall_malloc(); break; // fail
+		default: ___syscall_malloc(); break;  // fail
+	}
+
+	return 0;
 }

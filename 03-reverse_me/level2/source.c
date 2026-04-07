@@ -34,14 +34,13 @@ int main(void) {
     out[0] = 'd';
     temp[3] = '\0';
 
-    while (strlen(out) < 8) {
-        if (in_idx >= strlen(input)) break;
-
-        temp[0] = input[in_idx];          // read from input after "00"
+    while (strlen(out) < 8 && in_idx < strlen(input)) {
+        temp[0] = input[in_idx];            // read from input after "00"
         temp[1] = input[in_idx + 1];
         temp[2] = input[in_idx + 2];
         
-        out[out_idx] = (char)atoi(temp);  // write to out after "d"      
+        out[out_idx] = (char)(atoi(temp));  // write to out after "d"
+              
         in_idx  += 3;
         out_idx += 1;
     }
