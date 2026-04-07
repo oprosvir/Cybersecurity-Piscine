@@ -8,13 +8,13 @@ level1: ELF 32-bit LSB pie executable, Intel 80386, version 1 (SYSV),
 dynamically linked, interpreter /lib/ld-linux.so.2, not stripped
 ```
 
-| Field | Meaning |
-|---|---|
-| `ELF 32-bit` | Linux binary format, x86 architecture (32-bit registers: eax, esp...) |
-| `LSB` | little-endian byte order |
-| `PIE` | loaded at random address (ASLR) — raw address breakpoints won't work |
-| `dynamically linked` | uses shared libraries (libc: strcmp, printf, scanf) |
-| `not stripped` | debug symbols kept — function names visible in GDB |
+| Field                | Meaning                                                               |
+|--------------------- |---------------------------------------------------------------------- |
+| `ELF 32-bit`         | Linux binary format, x86 architecture (32-bit registers: eax, esp...) |
+| `LSB`                | little-endian byte order                                              |
+| `PIE`                | loaded at random address (ASLR) — raw address breakpoints won't work  |
+| `dynamically linked` | uses shared libraries (libc: strcmp, printf, scanf)                   |
+| `not stripped`       | debug symbols kept — function names visible in GDB                    |
 
 ## 2. Finding the password with ltrace
 
@@ -57,7 +57,7 @@ Input buffer size:
 $1 = 100 # bytes
 ```
 
-We can also read strings directly from memory by computing their addresses.
+We can read strings directly from memory by computing their addresses.
 The password is copied FROM `.rodata` `[ebx - 0x1ff8]` INTO `[ebp - 0x7a]`:
 ```c
 0x000011ca <+10>:    call   0x11cf <main+15>
@@ -137,9 +137,10 @@ cp level1 level1_patched
 printf '\x90\x90\x90\x90\x90\x90' | dd of=level1_patched bs=1 seek=4676 conv=notrunc
 
 # Test
-echo "wrongpassword" | ./level1_patched  # Should output "Good job."
 ./level1_patched  # Enter any password
 ```
+
+`printf` generates raw bytes and sends them via pipe to `dd`. `dd` reads data from stdin and writes it to the file at the specified position.
 
 **Alternative**: use `hexedit` for visual editing — navigate to offset `0x1244`,
 replace `0f 85 16 00 00 00` with `90 90 90 90 90 90`, save with `Ctrl+X`.
@@ -152,11 +153,17 @@ hexedit level1_patched
 
 ### Tools used
 
+- **`gdb`** — **GNU Debugger**, a popular debugger for C/C++ programs. It allows stepping through code, inspecting variables, disassembling, and viewing CPU registers. Essential for reverse engineering and debugging.
+
+- **PIE (Position Independent Executable)**: A type of executable compiled to load at any random address in memory, enabled by ASLR (Address Space Layout Randomization). This prevents fixed-address exploits by randomizing memory locations, making the binary more secure.
+
 - **`objdump -d`** — disassembles the binary, showing each instruction as: address / hex bytes / mnemonic / operands.
 
 - **`readelf -S`** — prints the ELF section table. Each row shows a section name, its virtual address (where it loads in RAM), and its file offset (position in the file). Used to confirm that `vaddr == file offset` for `.text`, so the instruction address equals its position in the file.
 
-- **`dd`** — low-level copy utility that writes data directly to a specific byte position in a file. Flags used: `bs=1` (work byte by byte), `seek=4676` (start writing at byte 4676), `conv=notrunc` (do not truncate the file — only overwrite the target bytes).
+- **`printf`** — a Bash built-in command that outputs formatted data to stdout. It handles escape sequences like `\x90` (hex bytes) for generating raw binary data.
+
+- **`dd`** — low-level copy utility that writes data directly to a specific byte position in a file. Flags used: `bs=1` (work byte by byte), `seek=4676` (start writing at byte 4676), `conv=notrunc` (do not truncate the file — only overwrite the target bytes). By default, `dd` reads from stdin if no `if=` is specified.
 
 - **`hexedit`** — interactive hex editor for visual byte editing. Navigate to offset `0x1244`, replace `0f 85 16 00 00 00` with `90 90 90 90 90 90`, save with `Ctrl+X`.
 

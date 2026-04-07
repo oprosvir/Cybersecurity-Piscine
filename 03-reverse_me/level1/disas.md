@@ -74,26 +74,22 @@ End of assembler dump.
 ## Stack Layout for main function
 
 ```
-High addresses
 +-----------------------------+
-| return address (4 bytes)    |
-+-----------------------------+  %ebp + 4  (return address from main)
+| saved %eip (4 bytes)        |
++-----------------------------+  %ebp + 4    (return address)
 | saved %ebp (4 bytes)        |
-+-----------------------------+  %ebp       (old %ebp)
++-----------------------------+  %ebp
 | saved %ebx (4 bytes)        |
-+-----------------------------+  %ebp - 4   (saved %ebx)
++-----------------------------+  %ebp - 4
 | unused local var (4 bytes)  |
-+-----------------------------+  %ebp - 8   (movl $0x0, -0x8(%ebp))
-| input[100] (100 bytes)      |
-|   (buffer for scanf)        |
-+-----------------------------+  %ebp - 108 (-0x6c(%ebp))
-| password[14] (14 bytes)     |
-|   (copied from .rodata)     |
-+-----------------------------+  %ebp - 122 (-0x7a(%ebp))
++-----------------------------+  %ebp - 8    (-0x8(%ebp))
+| input[100]                  |
++-----------------------------+  %ebp - 108  (-0x6c(%ebp))
+| password[14]                |
++-----------------------------+  %ebp - 122  (-0x7a(%ebp))
 | saved GOT base (4 bytes)    |
-+-----------------------------+  %ebp - 128 (mov %ebx, -0x80(%ebp))
-| rest of stack (up to 0x84)  |
-+-----------------------------+  %ebp - 132 (end of frame)
-Low addresses
++-----------------------------+  %ebp - 128  (-0x80(%ebp))
+|             ...             |
++-----------------------------+  %ebp - 132  (-0x84(%ebp))  (end of frame)
 ```
 

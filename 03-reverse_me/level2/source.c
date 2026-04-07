@@ -12,25 +12,21 @@ void ok(void) {
 }
 
 int main(void) {
-    int scan_result;    // ebp-0xc
-    int j;              // ebp-0x10
-    int i;              // ebp-0x14
+    int     scanf_ret;      // ebp-0xc
+    int     out_idx	= 1;    // ebp-0x10
+    int     in_idx	= 2;    // ebp-0x14
 
-    char out[9];        // ebp-0x1d
-    char input[24];     // ebp-0x35
-    char temp[4];       // ebp-0x39
+    char    out[9];         // ebp-0x1d
+    char    input[24];      // ebp-0x35
+    char    temp[4];        // ebp-0x39
 
     printf("Please enter key: ");
-    scan_result = scanf("%23s", input);    // read 23 symbols max + '\0'
-    if (scan_result != 1) {
-        no();
-    }
-    if (input[1] != '0') {
-        no();
-    }
-    if (input[0] != '0') {
-        no();
-    }
+
+    scanf_ret = scanf("%23s", input);    // read 23 symbols max + '\0'
+    if (scanf_ret != 1)     no();
+
+    if (input[1] != '0')    no();
+    if (input[0] != '0')    no();
 
     fflush(stdin);
 
@@ -38,22 +34,19 @@ int main(void) {
     out[0] = 'd';
     temp[3] = '\0';
 
-    i = 2;      // read from input after "00"
-    j = 1;      // write to out after "d"
-
     while (strlen(out) < 8) {
-        if (i >= strlen(input)) break;
+        if (in_idx >= strlen(input)) break;
 
-        temp[0] = input[i];
-        temp[1] = input[i+1];
-        temp[2] = input[i+2];
+        temp[0] = input[in_idx];          // read from input after "00"
+        temp[1] = input[in_idx + 1];
+        temp[2] = input[in_idx + 2];
         
-        out[j] = (char)atoi(temp);        
-        i += 3;
-        j += 1;
+        out[out_idx] = (char)atoi(temp);  // write to out after "d"      
+        in_idx  += 3;
+        out_idx += 1;
     }
     
-    out[j] = '\0';
+    out[out_idx] = '\0';
 
     if (strcmp(out, "delabere") == 0)
         ok();

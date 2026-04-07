@@ -104,8 +104,8 @@
 
    0x00001397 <+199>:   movb   $0x64,-0x1d(%ebp)      // out[0] = 'd'
    0x0000139b <+203>:   movb   $0x0,-0x36(%ebp)       // temp[3] = '\0'
-   0x0000139f <+207>:   movl   $0x2,-0x14(%ebp)       // counter i = 2 (read "00+")
-   0x000013a6 <+214>:   movl   $0x1,-0x10(%ebp)       // counter j = 1 (write "d+")
+   0x0000139f <+207>:   movl   $0x2,-0x14(%ebp)       // counter in_idx = 2 (read "00+")
+   0x000013a6 <+214>:   movl   $0x1,-0x10(%ebp)       // counter out_idx = 1 (write "d+")
 
    // main processing loop
    0x000013ad <+221>:   mov    -0x40(%ebp),%ebx
@@ -120,16 +120,16 @@
    0x000013c6 <+246>:   jae    0x13ee <main+286>      // jump if strlen(out) >= 8
 
    0x000013cc <+252>:   mov    -0x40(%ebp),%ebx
-   0x000013cf <+255>:   mov    -0x14(%ebp),%eax       // eax = i
-   0x000013d2 <+258>:   mov    %eax,-0x48(%ebp)       // tmp_i
+   0x000013cf <+255>:   mov    -0x14(%ebp),%eax       // eax = in_idx
+   0x000013d2 <+258>:   mov    %eax,-0x48(%ebp)       // tmp_in_idx
    0x000013d5 <+261>:   lea    -0x35(%ebp),%ecx
    0x000013d8 <+264>:   mov    %esp,%eax
    0x000013da <+266>:   mov    %ecx,(%eax)
    0x000013dc <+268>:   call   0x10a0 <strlen@plt>    // strlen(input), result in %eax
    0x000013e1 <+273>:   mov    %eax,%ecx
    0x000013e3 <+275>:   mov    -0x48(%ebp),%eax
-   0x000013e6 <+278>:   cmp    %ecx,%eax              // cmp i & input_length
-   0x000013e8 <+280>:   setb   %al                    // al = 1 if i < input_length
+   0x000013e6 <+278>:   cmp    %ecx,%eax              // cmp in_idx & input_length
+   0x000013e8 <+280>:   setb   %al                    // al = 1 if in_idx < input_length
    0x000013eb <+283>:   mov    %al,-0x41(%ebp)        // flag = %al (1 or 0)
 
    // exit condition (i > input_length && )
@@ -140,38 +140,38 @@
 
    // loop body
    0x000013fe <+302>:   mov    -0x40(%ebp),%ebx
-   0x00001401 <+305>:   mov    -0x14(%ebp),%eax       // eax = i
-   0x00001404 <+308>:   mov    -0x35(%ebp,%eax,1),%al // al = input[i]
-   0x00001408 <+312>:   mov    %al,-0x39(%ebp)        // temp[0] = input[i]
+   0x00001401 <+305>:   mov    -0x14(%ebp),%eax       // eax = in_idx
+   0x00001404 <+308>:   mov    -0x35(%ebp,%eax,1),%al // al = input[in_idx]
+   0x00001408 <+312>:   mov    %al,-0x39(%ebp)        // temp[0] = input[in_idx]
 
-   0x0000140b <+315>:   mov    -0x14(%ebp),%eax       // eax = i
-   0x0000140e <+318>:   mov    -0x34(%ebp,%eax,1),%al // input[i+1] (-0x34 = -0x35 + 1)
-   0x00001412 <+322>:   mov    %al,-0x38(%ebp)        // temp[1] = input[i+1]
+   0x0000140b <+315>:   mov    -0x14(%ebp),%eax       // eax = in_idx
+   0x0000140e <+318>:   mov    -0x34(%ebp,%eax,1),%al // input[in_idx+1] (-0x34 = -0x35 + 1)
+   0x00001412 <+322>:   mov    %al,-0x38(%ebp)        // temp[1] = input[in_idx+1]
 
-   0x00001415 <+325>:   mov    -0x14(%ebp),%eax       // eax = i
-   0x00001418 <+328>:   mov    -0x33(%ebp,%eax,1),%al // input[i+2]
-   0x0000141c <+332>:   mov    %al,-0x37(%ebp)        // temp[2] = input[i+2]
+   0x00001415 <+325>:   mov    -0x14(%ebp),%eax       // eax = in_idx
+   0x00001418 <+328>:   mov    -0x33(%ebp,%eax,1),%al // input[in_idx+2]
+   0x0000141c <+332>:   mov    %al,-0x37(%ebp)        // temp[2] = input[in_idx+2]
 
    0x0000141f <+335>:   lea    -0x39(%ebp),%eax       // eax = &temp
    0x00001422 <+338>:   mov    %eax,(%esp)
    0x00001425 <+341>:   call   0x10d0 <atoi@plt>      // atoi(tmp)
    0x0000142a <+346>:   mov    %al,%cl
-   0x0000142c <+348>:   mov    -0x10(%ebp),%eax       // eax = j
-   0x0000142f <+351>:   mov    %cl,-0x1d(%ebp,%eax,1) // out[j] = char(atoi)
+   0x0000142c <+348>:   mov    -0x10(%ebp),%eax       // eax = out_idx
+   0x0000142f <+351>:   mov    %cl,-0x1d(%ebp,%eax,1) // out[out_idx] = char(atoi)
 
    0x00001433 <+355>:   mov    -0x14(%ebp),%eax
-   0x00001436 <+358>:   add    $0x3,%eax              // i + 3
+   0x00001436 <+358>:   add    $0x3,%eax              // in_idx + 3
    0x00001439 <+361>:   mov    %eax,-0x14(%ebp)
 
    0x0000143c <+364>:   mov    -0x10(%ebp),%eax
-   0x0000143f <+367>:   add    $0x1,%eax              // j + 1
+   0x0000143f <+367>:   add    $0x1,%eax              // out_idx + 1
    0x00001442 <+370>:   mov    %eax,-0x10(%ebp)
    0x00001445 <+373>:   jmp    0x13ad <main+221>      // jump to loop start
 
    // finish string and compare
    0x0000144a <+378>:   mov    -0x40(%ebp),%ebx
-   0x0000144d <+381>:   mov    -0x10(%ebp),%eax       // eax = j
-   0x00001450 <+384>:   movb   $0x0,-0x1d(%ebp,%eax,1)   // out[j] = '\0'
+   0x0000144d <+381>:   mov    -0x10(%ebp),%eax       // eax = out_idx
+   0x00001450 <+384>:   movb   $0x0,-0x1d(%ebp,%eax,1)   // out[out_idx] = '\0'
 
    0x00001455 <+389>:   lea    -0x1d(%ebp),%ecx       // ecx = &out
    0x00001458 <+392>:   lea    -0x42cd(%ebx),%edx     // 0x2d33: "delabere"
@@ -200,21 +200,20 @@
 ## Stack Layout for main function
 
 ```
-High addresses
 +-----------------------------+
-| return address (4 bytes)    |
-+-----------------------------+  %ebp + 4
+| saved %eip (4 bytes)        |
++-----------------------------+  %ebp + 4   (return address)
 | saved %ebp (4 bytes)        |
 +-----------------------------+  %ebp
 | saved %ebx (4 bytes)        |
 +-----------------------------+  %ebp - 4
 | unused local var (4 bytes)  |
-+-----------------------------+  %ebp - 8   (movl $0x0, -0x8(%ebp))
-| scan_result  (4 bytes)      |
++-----------------------------+  %ebp - 8   (-0x8(%ebp))
+| scanf_ret (4 bytes)         |
 +-----------------------------+  %ebp - 12  (-0xc(%ebp))
-| j counter (4 bytes)         |
+| out_idx (4 bytes)           |
 +-----------------------------+  %ebp - 16  (-0x10(%ebp))
-| i counter (4 bytes)         |
+| in_idx (4 bytes)            |
 +-----------------------------+  %ebp - 20  (-0x14(%ebp))
 | out[9]                      |
 +-----------------------------+  %ebp - 29  (-0x1d(%ebp))
@@ -239,6 +238,5 @@ High addresses
 | tmp_i (4 bytes)             |
 +-----------------------------+  %ebp - 72  (-0x48(%ebp))
 |             ...             |
-+-----------------------------+  %ebp - 84  (-0x54(%ebp))
-Low addresses
++-----------------------------+  %ebp - 84  (-0x54(%ebp)) (end of frame)
 ```

@@ -70,11 +70,11 @@ First inspect the binary to confirm the exact bytes:
 objdump -d ./level2
 ```
 
-| Check           | Address          | Opcode | What to patch |
-| --------------- | ---------------- | ------ | ------------- |
-| `input[1] != '0'` | `0x1340` - `call no` | `e8 db fe ff ff` | `nop` x5 |
-| `input[0] != '0'` | `0x1359` - `call no` | `e8 c2 fe ff ff` | `nop` x5 |
-| `strcmp != 0`     | `0x146d` - `jne`     | `0f 85 0d 00 00 00` | `nop` x6 |
+| Check             | Address              | Opcode              | What to patch |
+| ----------------- | -------------------- | ------------------- | ------------- |
+| `input[1] != '0'` | `0x1340` - `call no` | `e8 db fe ff ff`    | `nop` x5      |
+| `input[0] != '0'` | `0x1359` - `call no` | `e8 c2 fe ff ff`    | `nop` x5      |
+| `strcmp != 0`     | `0x146d` - `jne`     | `0f 85 0d 00 00 00` | `nop` x6      |
 
 ### Patch with `dd`
 
@@ -100,9 +100,6 @@ objdump -d ./level2_patched | grep -A3 "1340:\|1359:\|146d:"
 Test the patched binary:
 
 ```bash
-echo "anything" | ./level2_patched
-# Good job.
-
-echo "xyz" | ./level2_patched
+./level2_patched  # Enter any password
 # Good job.
 ```
