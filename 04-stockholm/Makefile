@@ -1,16 +1,19 @@
 NAME		= stockholm
 TARGETDIR	= infection
+TESTDATA	= testdata
 PYTHON		= python3
 
 all:
-	@if [ -f requirements.txt ]; then pip3 install -r requirements.txt; fi
+# 	pip3 install cryptography==46.0.7 (in venv)
+	sudo apt install python3-cryptography 
 	chmod +x $(NAME).py
 	mkdir -p $$HOME/$(TARGETDIR)
+	cp -r $(TESTDATA)/* $$HOME/$(TARGETDIR)/
 
 run: all
 	$(PYTHON) $(NAME).py --help
 
 clean:
-	rm -r $$HOME/${TARGETDIR}
+	rm -rf $$HOME/${TARGETDIR}
 
 .PHONY: all run clean

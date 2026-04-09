@@ -1,0 +1,21 @@
+Confidential - Project Stockholm
+Owner: IT Security Team
+Date: 2026-04-10
+
+Credentials (DO NOT SHARE)
+- VPN: vpn-user / P@ssw0rd-2026
+- SMTP: alerts@corp.local / 8f3x-ALRT-92
+
+Server inventory
+- db01.corp.local (10.0.0.12) - PostgreSQL 14
+- files01.corp.local (10.0.0.21) - SMB shares
+- proxy01.corp.local (10.0.0.31) - Nginx
+
+Payment notes
+- Bank: ACME Bank
+- IBAN: DE12 5001 0517 5407 3249 31
+- SWIFT: ABNANL2A
+- Ref: April invoice 0432
+
+Reminder:
+Rotate admin keys before end of month.
