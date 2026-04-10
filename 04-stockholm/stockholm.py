@@ -6,7 +6,7 @@ import os
 import base64
 from pathlib import Path
 from argon2.low_level import hash_secret_raw, Type
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
 
 VERSION = "1.0.0"
 MAGIC = b"STK1"
@@ -78,7 +78,30 @@ def encrypt_file(filepath, password, silent):
     log(f"Encrypted: {filepath.name}", silent)
 
 def decrypt_file(filepath, password, silent):
+    blob = filepath.read_bytes()
+
+    if len(blob) < len(MAGIC) + SALT_SIZE:
+        raise ValueError("file too short")
+    
+    if blob[:len(MAGIC)] != MAGIC:
+        raise ValueError("invalid file format")
+    
+    salt = blob[len(MAGIC):len(MAGIC) + SALT_SIZE]
+    encrypted = blob[len(MAGIC) + SALT_SIZE:]
+
+    key = derive_key(password, salt)
+    fernet = Fernet(key)
+
+    try:
+        data = fernet.decrypt(encrypted)
+    except InvalidToken as exc:
+        raise ValueError("wrong key or corrupted file") from exc
+
     restored_name = filepath.name[:-3]
+    original_path = filepath.with_name(restored_name)
+    original_path.write_bytes(data)
+    filepath.unlink()
+
     log(f"Decrypted: {restored_name}", silent)
 
 def process_files(args):
