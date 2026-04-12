@@ -4,6 +4,8 @@ Stockholm is a Python-based simulator of ransomware behavior, designed for educa
 
 **Warning:** This is a simulation tool. Do not run it on real data or systems. Use only in controlled environments for learning.
 
+<img src="assets/wannacry-ransomware.jpg" alt="Wana_Decrypt0r Screenshot" width="800">
+
 ## Features
 
 - **File Encryption:** Encrypts files with extensions matching WannaCry's list (e.g., `.docx`, `.jpg`, `.pdf`).
