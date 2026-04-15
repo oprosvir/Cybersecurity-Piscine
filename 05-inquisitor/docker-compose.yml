@@ -1,0 +1,35 @@
+services:
+  ftp-server:
+    image: fauria/vsftpd:latest
+    container_name: ftp-server
+    ports:
+      - "21:21"
+    environment:
+      - FTP_USER=ftpuser
+      - FTP_PASS=ftppassword
+      - PASV_ADDR_RESOLVE=YES
+      - PASV_ADDRESS=ftp-server
+    networks:
+      - inquisitor_net
+
+  ftp-client:
+    image: alpine:latest
+    container_name: ftp-client
+    command: sh -c "apk add --no-cache lftp && tail -f /dev/null"
+    networks:
+      - inquisitor_net
+    depends_on:
+      - ftp-server
+
+  inquisitor:
+    build: .
+    container_name: inquisitor
+    networks:
+      - inquisitor_net
+    depends_on:
+      - ftp-server
+      - ftp-client
+
+networks:
+  inquisitor_net:
+    driver: bridge

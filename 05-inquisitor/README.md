@@ -12,9 +12,9 @@ Python-based network security tool that performs ARP poisoning for man-in-the-mi
 
 ## Implementation plan
 
-1. Set up containerized environment with `Dockerfile` and `docker-compose.yml` for isolated Linux testing, including Python, Scapy, and FTP server/client for validation.
+1. ✅ Set up containerized environment with `Dockerfile` and `docker-compose.yml` for isolated Linux testing, including Python, Scapy, and FTP server/client for validation.
 
-2. Create `Makefile` to automate building the container, running the tool, and executing test suite without user intervention.
+2. ✅ Create `Makefile` to automate building the container, running the tool, and executing test suite without user intervention.
 
 3. Implement argument parsing in `inquisitor.py` for required parameters (**IP-src**, **MAC-src**, **IP-target**, **MAC-target**) and optional verbose flag (`-v`).
 
