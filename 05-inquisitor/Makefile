@@ -12,6 +12,8 @@ info:
 	@echo "FTP Client MAC: $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.MacAddress}}{{end}}' ftp-client)"
 	@echo "Inquisitor IP: $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' inquisitor)"
 	@echo "Inquisitor MAC: $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.MacAddress}}{{end}}' inquisitor)"
+	@echo ""
+	docker exec inquisitor python inquisitor.py --help
 
 run:
 	$(eval SERVER_IP := $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ftp-server))

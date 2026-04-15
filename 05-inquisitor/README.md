@@ -16,7 +16,7 @@ Python-based network security tool that performs ARP poisoning for man-in-the-mi
 
 2. ✅ Create `Makefile` to automate building the container, running the tool, and executing test suite without user intervention.
 
-3. Implement argument parsing in `inquisitor.py` for required parameters (**IP-src**, **MAC-src**, **IP-target**, **MAC-target**) and optional verbose flag (`-v`).
+3. ✅ Implement argument parsing in `inquisitor.py` for required parameters (**IP-src**, **MAC-src**, **IP-target**, **MAC-target**) and optional verbose flag (`-v`).
 
 4. Add **ARP poisoning** functionality: Send spoofed ARP replies to both source and target hosts to redirect traffic through the attacker machine (full duplex).
 
