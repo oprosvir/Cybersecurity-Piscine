@@ -18,15 +18,15 @@ Python-based network security tool that performs ARP poisoning for man-in-the-mi
 
 3. ✅ Implement argument parsing in `inquisitor.py` for required parameters (**IP-src**, **MAC-src**, **IP-target**, **MAC-target**) and optional verbose flag (`-v`).
 
-4. Add **ARP poisoning** functionality: Send spoofed ARP replies to both source and target hosts to redirect traffic through the attacker machine (full duplex).
+4. ✅ Add **ARP poisoning** functionality: Send spoofed ARP replies to both source and target hosts to redirect traffic through the attacker machine (full duplex).
 
 5. Implement packet sniffing using *Scapy/libpcap* to capture FTP control channel traffic (**port 21**).
 
 6. Parse intercepted FTP commands (e.g., `RETR`, `STOR`) to extract and display file names in real time; in verbose mode, show all FTP traffic including login details.
 
-7. Handle signal interruption (`CTRL+C`) to restore original ARP table entries by sending corrective ARP replies.
+7. ✅ Handle signal interruption (`CTRL+C`) to restore original ARP table entries by sending corrective ARP replies.
 
-8. Add robust error handling for invalid inputs, network issues, and unexpected failures to ensure the program never stops unexpectedly.
+8. ✅ Add robust error handling for invalid inputs, network issues, and unexpected failures to ensure the program never stops unexpectedly.
 
 9. Prepare automated test suite: Configure FTP server and client in the container, simulate file transfers, run inquisitor, and verify interception output.
 

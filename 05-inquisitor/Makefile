@@ -12,7 +12,8 @@ info:
 	@echo "FTP Client MAC: $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.MacAddress}}{{end}}' ftp-client)"
 	@echo "Inquisitor IP: $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' inquisitor)"
 	@echo "Inquisitor MAC: $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.MacAddress}}{{end}}' inquisitor)"
-	@echo ""
+
+help:
 	docker exec inquisitor python inquisitor.py --help
 
 run:
@@ -30,4 +31,4 @@ clean:
 
 re: clean up
 
-.PHONY: all up info run down clean re
+.PHONY: all up info help run down clean re
