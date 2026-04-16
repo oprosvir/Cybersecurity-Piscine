@@ -1,33 +1,66 @@
 # Inquisitor: ARP Poisoning and FTP Interception Tool
 
-Python-based network security tool that performs ARP poisoning for man-in-the-middle attacks and intercepts FTP traffic to display file names in real time, with restoration of ARP tables on exit.
+Python-based ARP poisoning tool for man-in-the-middle attacks on FTP traffic. Intercepts and displays FTP commands, credentials, filenames, and file contents in real time, then restores ARP tables cleanly on exit.
+
+**Warning:** This tool is for educational purposes only. ARP poisoning can disrupt networks and is illegal without permission.
 
 ## Contents
 
-- `Dockerfile`: Container setup with dependencies
-- `docker-compose.yml`: Multi-service setup for FTP testing
-- `Makefile`: Build and run automation
-- `inquisitor.py` — Main tool implementation
-- `README.md`: Documentation and usage guide
+| File | Description |
+|------|-------------|
+| `inquisitor.py` | Main tool |
+| `Dockerfile` | Container setup with dependencies |
+| `docker-compose.yml` | Multi-service environment (attacker, FTP client, FTP server) |
+| `Makefile` | Build and run automation |
 
-## Implementation plan
+## Setup
 
-1. ✅ Set up containerized environment with `Dockerfile` and `docker-compose.yml` for isolated Linux testing, including Python, Scapy, and FTP server/client for validation.
+```bash
+make up       # Build and start containers
+make info     # Show IPs and MACs of all services
+```
 
-2. ✅ Create `Makefile` to automate building the container, running the tool, and executing test suite without user intervention.
+## Usage
 
-3. ✅ Implement argument parsing in `inquisitor.py` for required parameters (**IP-src**, **MAC-src**, **IP-target**, **MAC-target**) and optional verbose flag (`-v`).
+```bash
+python inquisitor.py <ip-src> <mac-src> <ip-target> <mac-target> [--verbose]
+```
 
-4. ✅ Add **ARP poisoning** functionality: Send spoofed ARP replies to both source and target hosts to redirect traffic through the attacker machine (full duplex).
+### Quick Start
 
-5. ✅ Implement packet sniffing using *Scapy/libpcap* to capture FTP control channel traffic (**port 21**).
+```bash
+make run          # Run without verbose
+make run-verbose  # Run with full FTP traffic output
+```
 
-6. ✅ Parse intercepted FTP commands (e.g., `RETR`, `STOR`) to extract and display file names in real time; in verbose mode, show all FTP traffic including login details.
+## Example Session
 
-7. ✅ Handle signal interruption (`CTRL+C`) to restore original ARP table entries by sending corrective ARP replies.
+**Terminal 1 — start Inquisitor:**
+```bash
+make run-verbose
+```
 
-8. ✅ Add robust error handling for invalid inputs, network issues, and unexpected failures to ensure the program never stops unexpectedly.
+**Terminal 2 — transfer a file:**
+```bash
+docker exec -it ftp-client sh
+lftp -u ftpuser:ftppassword ftp://ftp-server
+!echo "test content" > testfile.txt
+put testfile.txt
+!rm testfile.txt
+get testfile.txt
+```
 
-9. Prepare automated test suite: Configure FTP server and client in the container, simulate file transfers, run inquisitor, and verify interception output.
+**Output:**
+```bash
+[*] Starting Inquisitor...
+[*] Poisoning 172.18.0.3 <-> 172.18.0.2
+[*] Sniffing FTP on port 21... (Ctrl+C to stop)
+[FTP]      >>> Uploading: testfile.txt
+[FTP DATA] >>> {PORT 21105} test content
+```
 
-10. Document usage, setup, and testing in `README.md` with examples and security disclaimers.
+## How It Works
+
+1. **ARP Poisoning** — sends forged ARP replies to both hosts every 2 seconds, redirecting their traffic through the attacker machine
+2. **Packet Sniffing** — captures TCP traffic on port 21 (control) and ports 21100–21110 (passive data)
+3. **Restoration** — on `Ctrl+C`, sends 5 correct ARP replies to each host to restore the tables
