@@ -4,6 +4,12 @@ up:
 	docker compose up --build -d
 	@echo "Containers running. Enter attacker with:"
 	@echo "  docker exec -it inquisitor bash"
+	@echo ""
+	@echo "Quick run commands:"
+	@echo "  make help         # Show help and usage"
+	@echo "  make run          # Run with IPs/MACs from containers"
+	@echo "  make run-verbose  # Run with verbose FTP logging"
+	@echo "  make re           # Restart containers"
 
 info:
 	@echo "FTP Server IP: $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ftp-server)"
@@ -23,12 +29,19 @@ run:
 	$(eval CLIENT_MAC := $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.MacAddress}}{{end}}' ftp-client))
 	docker exec -it inquisitor python inquisitor.py $(CLIENT_IP) $(CLIENT_MAC) $(SERVER_IP) $(SERVER_MAC)
 
+run-verbose:
+	$(eval SERVER_IP := $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ftp-server))
+	$(eval SERVER_MAC := $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.MacAddress}}{{end}}' ftp-server))
+	$(eval CLIENT_IP := $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ftp-client))
+	$(eval CLIENT_MAC := $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.MacAddress}}{{end}}' ftp-client))
+	docker exec -it inquisitor python inquisitor.py $(CLIENT_IP) $(CLIENT_MAC) $(SERVER_IP) $(SERVER_MAC) --verbose
+
 down:
 	docker compose down
 
 clean:
 	docker compose down --rmi all --remove-orphans
 
-re: clean up
+re: down up
 
-.PHONY: all up info help run down clean re
+.PHONY: all up info help run run-verbose down clean re

@@ -20,9 +20,9 @@ Python-based network security tool that performs ARP poisoning for man-in-the-mi
 
 4. ✅ Add **ARP poisoning** functionality: Send spoofed ARP replies to both source and target hosts to redirect traffic through the attacker machine (full duplex).
 
-5. Implement packet sniffing using *Scapy/libpcap* to capture FTP control channel traffic (**port 21**).
+5. ✅ Implement packet sniffing using *Scapy/libpcap* to capture FTP control channel traffic (**port 21**).
 
-6. Parse intercepted FTP commands (e.g., `RETR`, `STOR`) to extract and display file names in real time; in verbose mode, show all FTP traffic including login details.
+6. ✅ Parse intercepted FTP commands (e.g., `RETR`, `STOR`) to extract and display file names in real time; in verbose mode, show all FTP traffic including login details.
 
 7. ✅ Handle signal interruption (`CTRL+C`) to restore original ARP table entries by sending corrective ARP replies.
 
