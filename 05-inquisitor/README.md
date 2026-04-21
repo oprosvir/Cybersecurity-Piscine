@@ -4,6 +4,8 @@ Python-based ARP poisoning tool for man-in-the-middle attacks on FTP traffic. In
 
 **Warning:** This tool is for educational purposes only. ARP poisoning can disrupt networks and is illegal without permission.
 
+<img src="assets/arp-poisoning.png" alt="ARP Poisoning Description" width="800"> 
+
 ## Contents
 
 | File | Description |
