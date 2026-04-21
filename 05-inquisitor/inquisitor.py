@@ -77,6 +77,8 @@ class Inquisitor:
             arrow = ">>>" if 21100 <= dport <= 21110 else "<<<"
             port_num = dport if 21100 <= dport <= 21110 else sport
             print(f"[FTP DATA] {arrow} {{PORT {port_num}}} {text}")
+
+        scapy.wrpcap("captured_packets.pcap", packet, append=True)
         
     def run(self):
         print("[*] Starting Inquisitor...")

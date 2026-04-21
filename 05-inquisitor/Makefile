@@ -36,6 +36,9 @@ run-verbose:
 	$(eval CLIENT_MAC := $(shell docker inspect -f '{{range .NetworkSettings.Networks}}{{.MacAddress}}{{end}}' ftp-client))
 	docker exec -it inquisitor python inquisitor.py $(CLIENT_IP) $(CLIENT_MAC) $(SERVER_IP) $(SERVER_MAC) --verbose
 
+copy-pcap:
+    docker cp inquisitor:/app/captured_packets.pcap .
+
 down:
 	docker compose down
 
@@ -44,4 +47,4 @@ clean:
 
 re: down up
 
-.PHONY: all up info help run run-verbose down clean re
+.PHONY: all up info help run run-verbose down clean re copy-pcap
