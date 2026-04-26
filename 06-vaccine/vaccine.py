@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from core.cli import parse_args, validate_args
+from core.cli import parse_args, validate_args, Config
 import sys
 import json
 import os
@@ -19,11 +19,17 @@ def main():
         validate_args(args)
         init_archive(args.archive_path)
 
-        print("URL    :", args.url)
-        print("Output :", args.archive_path)
-        print("Method :", args.method)
-        if args.post_data:
-            print("Data   :", args.post_data)
+        config = Config(args)
+
+        print("URL    :", config.url)
+        print("Method :", config.method)
+        print("Output :", config.archive_path)
+        if config.post_data:
+            print("Data   :", config.post_data)
+
+        print(f"\n[*] Found {len(config.params)} parameter(s) to test:")
+        for p in config.params:
+            print(f"    - {p['name']} = {p['value']}")
 
     except Exception as e:
         error_exit(e)

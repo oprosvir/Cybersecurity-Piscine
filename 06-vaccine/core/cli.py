@@ -1,5 +1,5 @@
 import argparse
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qsl
 
 def parse_args():
     parser = argparse.ArgumentParser( 
@@ -54,3 +54,19 @@ def validate_args(args):
     
     if not args.archive_path or not args.archive_path.endswith('.json'):
         raise ValueError("Invalid archive path: must end with .json")
+
+class Config:
+    def __init__(self, args):
+        self.url = args.url
+        self.method = args.method
+        self.post_data = args.post_data
+        self.archive_path = args.archive_path
+        self.params = self._extract_params()
+
+    def _extract_params(self):
+        if self.method == "GET":
+            parsed = urlparse(self.url)
+            pairs = parse_qsl(parsed.query, keep_blank_values=True)
+        else:
+            pairs = parse_qsl(self.post_data, keep_blank_values=True)
+        return [{"name": k, "value": v} for k, v in pairs]
