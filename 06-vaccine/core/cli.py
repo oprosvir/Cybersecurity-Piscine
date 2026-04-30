@@ -1,7 +1,7 @@
 import argparse
-from urllib.parse import urlparse, parse_qsl
+from urllib.parse import urlparse
 
-def parse_args():
+def build_parser():
     parser = argparse.ArgumentParser( 
         description="Vaccine: Educational SQL injection testing tool",
     )
@@ -35,8 +35,17 @@ def parse_args():
         default=None,
         help="POST body, e.g., 'id=1&name=test'",
     )
-
-    return parser.parse_args()
+    
+    parser.add_argument(
+        "-H",
+        "--header",
+        dest="headers",
+        action="append",
+        default=[],
+        help='Extra header, repeatable, e.g. --header "User-Agent: vaccine"',
+    )
+    
+    return parser
 
 def validate_args(args):
     parsed = urlparse(args.url)
@@ -55,18 +64,9 @@ def validate_args(args):
     if not args.archive_path or not args.archive_path.endswith('.json'):
         raise ValueError("Invalid archive path: must end with .json")
 
-class Config:
-    def __init__(self, args):
-        self.url = args.url
-        self.method = args.method
-        self.post_data = args.post_data
-        self.archive_path = args.archive_path
-        self.params = self._extract_params()
-
-    def _extract_params(self):
-        if self.method == "GET":
-            parsed = urlparse(self.url)
-            pairs = parse_qsl(parsed.query, keep_blank_values=True)
-        else:
-            pairs = parse_qsl(self.post_data, keep_blank_values=True)
-        return [{"name": k, "value": v} for k, v in pairs]
+def parse_args():
+    parser = build_parser()
+    args = parser.parse_args()
+    validate_args(args)
+    
+    return args
