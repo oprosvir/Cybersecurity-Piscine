@@ -3,9 +3,11 @@ from core.config import BuildConfig
 from core.scanner import Scanner
 import sys
 
+
 def error_exit(message):
     print(f"[!] Error: {message}")
     sys.exit(1)
+
 
 def main():
     try:
@@ -20,12 +22,13 @@ def main():
         print(f"\n[*] Found {len(config.params)} parameter(s) to test:")
         for p in config.params:
             print(f"    - {p['name']} = {p['value']}")
-            
+
         scanner = Scanner(config)
-        scanner.requester.send(config.method, config.url)
+        scanner.run()
 
     except Exception as e:
         error_exit(e)
+
 
 if __name__ == '__main__':
     main()
