@@ -1,14 +1,15 @@
 import argparse
 from urllib.parse import urlparse
 
+
 def build_parser():
-    parser = argparse.ArgumentParser( 
+    parser = argparse.ArgumentParser(
         description="Vaccine: Educational SQL injection testing tool",
     )
 
     parser.add_argument(
         "url",
-        help="Target URL to test, e.g. http://localhost:8080/item?id=1",
+        help="Target URL, e.g. http://localhost:8000 or http://localhost:8000/search?q=1",
     )
 
     parser.add_argument(
@@ -33,40 +34,36 @@ def build_parser():
         "--data",
         dest="post_data",
         default=None,
-        help="POST body, e.g., 'id=1&name=test'",
+        help="Optional POST body override, e.g. 'id=1&name=test'. "
+             "If omitted for POST, parameters are discovered from the page's form.",
     )
-    
+
     parser.add_argument(
         "-H",
         "--header",
         dest="headers",
         action="append",
         default=[],
-        help='Extra header, repeatable, e.g. --header "User-Agent: vaccine"',
+        help='Extra header, repeatable, e.g. --header "Cookie: session=abc"',
     )
-    
+
     return parser
+
 
 def validate_args(args):
     parsed = urlparse(args.url)
     if parsed.scheme not in ("http", "https") or not parsed.netloc:
         raise ValueError(f"Invalid URL: {args.url}")
-    
+
     if args.method == "GET" and args.post_data:
-        raise ValueError("Data parameter is only valid with POST method")
-    
-    if args.method == "GET" and not parsed.query:
-        raise ValueError("GET testing requires at least one query parameter, e.g. ?id=1")
-    
-    if args.method == "POST" and not args.post_data:
-        raise ValueError("POST method requires --data with at least one parameter")
-    
-    if not args.archive_path or not args.archive_path.endswith('.json'):
+        raise ValueError("--data is only valid with POST method (-X POST)")
+
+    if not args.archive_path or not args.archive_path.endswith(".json"):
         raise ValueError("Invalid archive path: must end with .json")
+
 
 def parse_args():
     parser = build_parser()
     args = parser.parse_args()
     validate_args(args)
-    
     return args
