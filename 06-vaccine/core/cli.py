@@ -1,6 +1,7 @@
 import argparse
 from urllib.parse import urlparse
 
+
 def build_parser():
     parser = argparse.ArgumentParser( 
         description="Vaccine: Educational SQL injection testing tool",
@@ -8,7 +9,7 @@ def build_parser():
 
     parser.add_argument(
         "url",
-        help="Target URL to test, e.g. http://localhost:8080/item?id=1",
+        help="Target URL, e.g. http://localhost:8000",
     )
 
     parser.add_argument(
@@ -42,10 +43,11 @@ def build_parser():
         dest="headers",
         action="append",
         default=[],
-        help='Extra header, repeatable, e.g. --header "User-Agent: vaccine"',
+        help='Extra header, repeatable, e.g. --header "Cookie: session=abc"',
     )
     
     return parser
+
 
 def validate_args(args):
     parsed = urlparse(args.url)
@@ -63,6 +65,7 @@ def validate_args(args):
     
     if not args.archive_path or not args.archive_path.endswith('.json'):
         raise ValueError("Invalid archive path: must end with .json")
+
 
 def parse_args():
     parser = build_parser()
