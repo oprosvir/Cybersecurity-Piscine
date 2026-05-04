@@ -9,4 +9,3 @@ class Storage:
     def _init_file(self):
         if not self.path.exists():
             self.path.write_text("[]")
-

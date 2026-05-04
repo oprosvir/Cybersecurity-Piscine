@@ -3,7 +3,7 @@ from urllib.parse import urlparse
 
 
 def build_parser():
-    parser = argparse.ArgumentParser( 
+    parser = argparse.ArgumentParser(
         description="Vaccine: Educational SQL injection testing tool",
     )
 
@@ -36,7 +36,7 @@ def build_parser():
         default=None,
         help="POST body, e.g., 'id=1&name=test'",
     )
-    
+
     parser.add_argument(
         "-H",
         "--header",
@@ -45,7 +45,7 @@ def build_parser():
         default=[],
         help='Extra header, repeatable, e.g. --header "Cookie: session=abc"',
     )
-    
+
     return parser
 
 
@@ -53,17 +53,19 @@ def validate_args(args):
     parsed = urlparse(args.url)
     if parsed.scheme not in ("http", "https") or not parsed.netloc:
         raise ValueError(f"Invalid URL: {args.url}")
-    
+
     if args.method == "GET" and args.post_data:
         raise ValueError("Data parameter is only valid with POST method")
-    
+
     if args.method == "GET" and not parsed.query:
-        raise ValueError("GET testing requires at least one query parameter, e.g. ?id=1")
-    
+        raise ValueError(
+            "GET testing requires at least one query parameter, e.g. ?id=1"
+        )
+
     if args.method == "POST" and not args.post_data:
         raise ValueError("POST method requires --data with at least one parameter")
-    
-    if not args.archive_path or not args.archive_path.endswith('.json'):
+
+    if not args.archive_path or not args.archive_path.endswith(".json"):
         raise ValueError("Invalid archive path: must end with .json")
 
 
@@ -71,5 +73,5 @@ def parse_args():
     parser = build_parser()
     args = parser.parse_args()
     validate_args(args)
-    
+
     return args

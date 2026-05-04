@@ -20,6 +20,7 @@ def parse_headers(raw_headers):
 
     return headers
 
+
 class BuildConfig:
     def __init__(self, args):
         self.url = args.url
@@ -31,12 +32,14 @@ class BuildConfig:
     def _extract_params(self, post_data):
         if self.method == "GET":
             parsed = urlparse(self.url)
-            self.url = urlunparse((parsed.scheme, parsed.netloc, parsed.path, "", "", ""))
+            self.url = urlunparse(
+                (parsed.scheme, parsed.netloc, parsed.path, "", "", "")
+            )
             pairs = parse_qsl(parsed.query, keep_blank_values=True)
         else:
             pairs = parse_qsl(post_data, keep_blank_values=True)
         return [{"name": k, "value": v} for k, v in pairs]
-    
+
     @classmethod
     def from_cli(cls):
         args = parse_args()

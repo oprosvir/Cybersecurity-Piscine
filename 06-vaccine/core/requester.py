@@ -12,7 +12,7 @@ class Requester:
         self.headers.update(headers)
 
     def send(self, config, params=None):
-        if params is None:      # baseline request
+        if params is None:  # baseline request
             params = {p["name"]: p["value"] for p in config.params}
         try:
             if config.method == "GET":
